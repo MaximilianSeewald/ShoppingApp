@@ -1,7 +1,6 @@
 package com.loudless.beaundmaxi.ui.screens
 
 import android.app.Activity
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,7 +23,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -63,10 +63,11 @@ fun RecipeScreen(viewModel: RecipeViewModel, navController: NavHostController) {
     val focusManager = LocalFocusManager.current
     var lastTextInput by remember { mutableStateOf("") }
     var lastKeyInput by remember { mutableStateOf("") }
+    var lastFavouriteInput by remember { mutableStateOf(false) }
     Scaffold(modifier = Modifier.pointerInput(Unit){detectTapGestures {
         focusManager.clearFocus()
         if(recipeList.any{it.key == lastKeyInput}){
-            viewModel.editItem(lastKeyInput,lastTextInput,recipeList.find{it.key == lastKeyInput}!!)
+            viewModel.editItem(lastKeyInput,lastTextInput,recipeList.find{it.key == lastKeyInput}!!,lastFavouriteInput)
         }}},
         topBar = {
             TopBarRecipe(
@@ -89,9 +90,10 @@ fun RecipeScreen(viewModel: RecipeViewModel, navController: NavHostController) {
                         index = index,
                         viewModel = viewModel,
                         navController = navController,
-                        updateCurrentText =  { name, key ->
+                        updateCurrentText =  { name, key, favourite ->
                             lastTextInput = name
                             lastKeyInput = key
+                            lastFavouriteInput = favourite
                         }
                     )
                 }
@@ -108,7 +110,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, navController: NavHostController) {
 fun RecipeListItem(
     item: RecipeListItem,
     viewModel: RecipeViewModel,
-    updateCurrentText: (String, String) -> Unit,
+    updateCurrentText: (String, String, Boolean) -> Unit,
     index: Int,
     navController: NavHostController
 ) {
@@ -144,25 +146,33 @@ fun RecipeListItem(
         {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().height(50.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
             ) {
                 Icon(
-                    Icons.Filled.MoreVert,
+                    imageVector = if(item.favourite){Icons.Filled.Favorite}else{Icons.Filled.FavoriteBorder},
                     contentDescription = null,
-                    modifier = Modifier.weight(0.1f).padding(start = 10.dp)
+                    modifier = Modifier
+                        .weight(0.1f)
+                        .padding(start = 10.dp)
+                        .clickable { viewModel.editItem(item.key,item.name,item,!item.favourite) }
                 )
                 BasicTextField(
                     maxLines = 1,
-                    modifier = Modifier.weight(0.7f).fillMaxWidth().padding(start = 10.dp),
+                    modifier = Modifier
+                        .weight(0.7f)
+                        .fillMaxWidth()
+                        .padding(start = 10.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(onNext = {
-                        viewModel.editItem(item.key,textFieldValue,item)
+                        viewModel.editItem(item.key,textFieldValue,item, item.favourite)
                         focusManager.clearFocus()
                     }),
                     value = textFieldValue,
                     onValueChange = {
                         textFieldValue = it
-                        updateCurrentText(it, item.key)
+                        updateCurrentText(it, item.key, item.favourite)
                     },
                     textStyle = TextStyle(
                         fontSize = 26.sp,
@@ -172,11 +182,18 @@ fun RecipeListItem(
                 Icon(
                     Icons.Filled.Add,
                     contentDescription = null,
-                    modifier = Modifier.weight(0.2f).padding(start = 10.dp).clickable {
-                        viewModel.addShoppingListItems(item)
-                        val toast = Toast.makeText(context,item.items.size.toString() + " Items wurden zur Einkaufsliste hinzugefügt", Toast.LENGTH_LONG)
-                        toast.show()
-                    }
+                    modifier = Modifier
+                        .weight(0.2f)
+                        .padding(start = 10.dp)
+                        .clickable {
+                            viewModel.addShoppingListItems(item)
+                            val toast = Toast.makeText(
+                                context,
+                                item.items.size.toString() + " Items wurden zur Einkaufsliste hinzugefügt",
+                                Toast.LENGTH_LONG
+                            )
+                            toast.show()
+                        }
                 )
             }
         }

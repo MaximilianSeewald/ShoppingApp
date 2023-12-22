@@ -107,12 +107,12 @@ class DataRepository(private val databaseManager: DatabaseManager) {
 
     fun addItemToDBRecipe() {
         val key = java.util.UUID.randomUUID().toString()
-        val newItem = RecipeListItem(name = "", key = key, mutableListOf())
+        val newItem = RecipeListItem(name = "", key = key, mutableListOf(), false)
         databaseManager.addItemToDatabaseRecipe(newItem)
     }
 
-    fun editItemToDBRecipe(key: String, name: String, item: RecipeListItem) {
-        databaseManager.editItemToDatabaseRecipe(key,name, item)
+    fun editItemToDBRecipe(key: String, name: String, item: RecipeListItem, favourite: Boolean) {
+        databaseManager.editItemToDatabaseRecipe(key,name, item, favourite)
     }
 
     fun removeItemFromDBRecipe(item: RecipeListItem) {

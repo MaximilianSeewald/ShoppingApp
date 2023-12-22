@@ -79,7 +79,7 @@ class DatabaseManager {
                         )
                         shoppingItemList.add(item)
                     }
-                    val item = RecipeListItem(it.get("Name").toString(), it.id, shoppingItemList)
+                    val item = RecipeListItem(it.get("Name").toString(), it.id, shoppingItemList, it.get("Favourite").toString().toBoolean())
                     recipeList.add(item)
                 }
             }
@@ -90,15 +90,17 @@ class DatabaseManager {
     fun addItemToDatabaseRecipe(newItem: RecipeListItem) {
         val item = hashMapOf(
             "Name" to newItem.name,
-            "List" to mutableListOf<ShoppingListItem>()
+            "List" to mutableListOf<ShoppingListItem>(),
+            "Favourite" to false
         )
         db.collection("Rezepte").document(newItem.key).set(item)
     }
 
-    fun editItemToDatabaseRecipe(key: String, name: String, itemRecipe: RecipeListItem) {
+    fun editItemToDatabaseRecipe(key: String, name: String, itemRecipe: RecipeListItem, favourite: Boolean) {
         val item = hashMapOf(
             "Name" to name,
-            "List" to itemRecipe.items
+            "List" to itemRecipe.items,
+            "Favourite" to favourite
         )
         db.collection("Rezepte").document(key).set(item)
     }
@@ -110,7 +112,8 @@ class DatabaseManager {
     fun editItemToDatabaseToRecipe(itemRecipe: RecipeListItem) {
         val item = hashMapOf(
             "Name" to itemRecipe.name,
-            "List" to itemRecipe.items
+            "List" to itemRecipe.items,
+            "Favourite" to itemRecipe.favourite
         )
         db.collection("Rezepte").document(itemRecipe.key).set(item)
     }

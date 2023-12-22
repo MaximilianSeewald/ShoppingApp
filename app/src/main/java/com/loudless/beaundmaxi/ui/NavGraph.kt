@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.loudless.beaundmaxi.logic.DataRepository
+import com.loudless.beaundmaxi.logic.viewModel.HomeViewModel
 import com.loudless.beaundmaxi.logic.viewModel.RecipeViewModel
 import com.loudless.beaundmaxi.logic.viewModel.ShoppingViewModel
 import com.loudless.beaundmaxi.ui.screens.HomeScreen
@@ -16,10 +17,11 @@ import com.loudless.beaundmaxi.ui.screens.ShoppingScreen
 fun NavGraphCustom(navController: NavHostController, dataRepository: DataRepository){
     val shoppingViewModel = ShoppingViewModel(dataRepository)
     val recipeViewModel = RecipeViewModel(dataRepository)
-    NavHost(navController = navController, startDestination = "shopping") {
+    val homeViewModel = HomeViewModel(dataRepository)
+    NavHost(navController = navController, startDestination = "home") {
         composable("shopping") { ShoppingScreen(viewModel = shoppingViewModel, navController = navController) }
         composable("recipe") { RecipeScreen(viewModel = recipeViewModel, navController = navController) }
-        composable("home") { HomeScreen(navController = navController) }
+        composable("home") { HomeScreen(navController = navController, viewModel = homeViewModel) }
         composable("recipeDetail/{index}") {backStackEntry ->
             backStackEntry.arguments?.getString("index")?.toInt()
                 ?.let {

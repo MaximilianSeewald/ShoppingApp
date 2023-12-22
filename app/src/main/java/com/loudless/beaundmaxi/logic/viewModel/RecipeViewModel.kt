@@ -12,8 +12,8 @@ class RecipeViewModel(private val dataRepository: DataRepository): ViewModel() {
         dataRepository.addItemToDBRecipe()
     }
 
-    fun editItem(key: String ,name: String, item: RecipeListItem){
-        dataRepository.editItemToDBRecipe(key,name, item)
+    fun editItem(key: String ,name: String, item: RecipeListItem, favourite: Boolean){
+        dataRepository.editItemToDBRecipe(key,name, item, favourite)
     }
 
     fun removeItem(item: RecipeListItem){
