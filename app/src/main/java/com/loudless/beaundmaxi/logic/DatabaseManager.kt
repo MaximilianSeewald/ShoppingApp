@@ -66,7 +66,6 @@ class DatabaseManager {
 
     fun createRecipeList(dbList: List<DocumentSnapshot>): MutableList<RecipeListItem>{
         val recipeList: MutableList<RecipeListItem> = mutableListOf()
-        println("TRIGGER")
         if(dbList != null){
             dbList.forEach{
                 if(it.contains("Name") && it.contains("List")) {
@@ -96,10 +95,10 @@ class DatabaseManager {
         db.collection("Rezepte").document(newItem.key).set(item)
     }
 
-    fun editItemToDatabaseRecipe(key: String, name: String) {
+    fun editItemToDatabaseRecipe(key: String, name: String, itemRecipe: RecipeListItem) {
         val item = hashMapOf(
             "Name" to name,
-            "List" to mutableListOf<ShoppingListItem>()
+            "List" to itemRecipe.items
         )
         db.collection("Rezepte").document(key).set(item)
     }

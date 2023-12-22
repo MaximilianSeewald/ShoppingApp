@@ -12,8 +12,8 @@ class RecipeViewModel(private val dataRepository: DataRepository): ViewModel() {
         dataRepository.addItemToDBRecipe()
     }
 
-    fun editItem(key: String ,name: String){
-        dataRepository.editItemToDBRecipe(key,name)
+    fun editItem(key: String ,name: String, item: RecipeListItem){
+        dataRepository.editItemToDBRecipe(key,name, item)
     }
 
     fun removeItem(item: RecipeListItem){
@@ -30,6 +30,13 @@ class RecipeViewModel(private val dataRepository: DataRepository): ViewModel() {
 
     fun removeItemFromRecipe(itemRecipe: RecipeListItem,itemShopping: ShoppingListItem){
         dataRepository.removeItemFromDBFromRecipe(itemRecipe,itemShopping)
+    }
+
+    fun addShoppingListItems(item: RecipeListItem){
+        item.items.forEach {
+            val key = java.util.UUID.randomUUID().toString()
+            dataRepository.editItemToDB(key,it.name,it.marked)
+        }
     }
 
 }

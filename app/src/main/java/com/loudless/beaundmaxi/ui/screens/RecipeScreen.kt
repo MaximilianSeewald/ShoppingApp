@@ -1,5 +1,8 @@
 package com.loudless.beaundmaxi.ui.screens
 
+import android.app.Activity
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -39,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -62,7 +66,7 @@ fun RecipeScreen(viewModel: RecipeViewModel, navController: NavHostController) {
     Scaffold(modifier = Modifier.pointerInput(Unit){detectTapGestures {
         focusManager.clearFocus()
         if(recipeList.any{it.key == lastKeyInput}){
-            viewModel.editItem(lastKeyInput,lastTextInput)
+            viewModel.editItem(lastKeyInput,lastTextInput,recipeList.find{it.key == lastKeyInput}!!)
         }}},
         topBar = {
             TopBarRecipe(
@@ -111,6 +115,8 @@ fun RecipeListItem(
     var textFieldValue by remember { mutableStateOf(item.name) }
     val width = LocalConfiguration.current.screenWidthDp
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current as Activity
+    textFieldValue = item.name
     val delete = CustomSwipeAction(
         icon = rememberVectorPainter(Icons.Filled.Delete),
         background = Color.Red,
@@ -143,14 +149,14 @@ fun RecipeListItem(
                 Icon(
                     Icons.Filled.MoreVert,
                     contentDescription = null,
-                    modifier = Modifier.padding(start = 10.dp)
+                    modifier = Modifier.weight(0.1f).padding(start = 10.dp)
                 )
                 BasicTextField(
                     maxLines = 1,
-                    modifier = Modifier.fillMaxWidth().padding(start = 10.dp),
+                    modifier = Modifier.weight(0.7f).fillMaxWidth().padding(start = 10.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(onNext = {
-                        viewModel.editItem(item.key,textFieldValue)
+                        viewModel.editItem(item.key,textFieldValue,item)
                         focusManager.clearFocus()
                     }),
                     value = textFieldValue,
@@ -162,6 +168,15 @@ fun RecipeListItem(
                         fontSize = 26.sp,
                         color = MaterialTheme.colorScheme.primary
                     )
+                )
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = null,
+                    modifier = Modifier.weight(0.2f).padding(start = 10.dp).clickable {
+                        viewModel.addShoppingListItems(item)
+                        val toast = Toast.makeText(context,item.items.size.toString() + " Items wurden zur Einkaufsliste hinzugefügt", Toast.LENGTH_LONG)
+                        toast.show()
+                    }
                 )
             }
         }

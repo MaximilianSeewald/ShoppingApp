@@ -155,6 +155,7 @@ fun ShoppingListItem(
         background = Color.Red,
         onSwipe = { viewModel.removeItem(item) }
     )
+    textFieldValue = item.name
     SwipeableActionsBox(
         endActions = listOf(delete),
         swipeThreshold = (width / 3).dp,

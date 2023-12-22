@@ -69,7 +69,7 @@ class DataRepository(private val databaseManager: DatabaseManager) {
             }
         }
 
-        shoppingList.value = duplicatedList
+        shoppingList.update { duplicatedList }
     }
 
     fun compareFromDBRecipe(dbList: List<RecipeListItem>){
@@ -96,9 +96,6 @@ class DataRepository(private val databaseManager: DatabaseManager) {
                 duplicatedList.set(index,dbItem)
             }
         }
-        println(dbList)
-        println(recipeList.value)
-        println(duplicatedList)
         recipeList.update { duplicatedList }
     }
 
@@ -114,8 +111,8 @@ class DataRepository(private val databaseManager: DatabaseManager) {
         databaseManager.addItemToDatabaseRecipe(newItem)
     }
 
-    fun editItemToDBRecipe(key: String, name: String) {
-        databaseManager.editItemToDatabaseRecipe(key,name)
+    fun editItemToDBRecipe(key: String, name: String, item: RecipeListItem) {
+        databaseManager.editItemToDatabaseRecipe(key,name, item)
     }
 
     fun removeItemFromDBRecipe(item: RecipeListItem) {

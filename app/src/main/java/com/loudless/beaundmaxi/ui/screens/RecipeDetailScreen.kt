@@ -109,6 +109,7 @@ fun RecipeListItemDetail(
     var textFieldValue by remember { mutableStateOf(item.name) }
     val width = LocalConfiguration.current.screenWidthDp
     val focusManager = LocalFocusManager.current
+    textFieldValue = item.name
     val delete = CustomSwipeAction(
         icon = rememberVectorPainter(Icons.Filled.Delete),
         background = Color.Red,
