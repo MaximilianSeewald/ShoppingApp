@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,11 +27,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.kizitonwose.calendar.compose.WeekCalendar
+import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
+import com.kizitonwose.calendar.core.WeekDay
+import com.kizitonwose.calendar.core.daysOfWeek
 import com.loudless.beaundmaxi.logic.viewModel.HomeViewModel
 import com.loudless.beaundmaxi.ui.elements.BottomBar
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.util.Locale
 
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel) {
@@ -60,7 +68,7 @@ fun ColumnScope.QuickAddFavourites(viewModel: HomeViewModel) {
         .weight(0.1f))
     LazyColumn(modifier = Modifier
         .padding(20.dp)
-        .weight(0.4f)) {
+        .weight(0.6f)) {
         items(recipeList.value.filter { it.favourite == true }, key = { it.key }) {
             Box(
                 modifier = Modifier
@@ -119,9 +127,36 @@ fun ColumnScope.QuickAddFavourites(viewModel: HomeViewModel) {
 
 @Composable
 fun ColumnScope.Calendar(){
+    val calendarState = rememberWeekCalendarState(startDate = LocalDate.now())
     Text(text = "Terminübersicht", fontSize = 24.sp, modifier = Modifier
         .padding(20.dp)
         .weight(0.1f))
+    Column (modifier = Modifier.weight(0.2f)) {
+        DaysOfWeekTitle(daysOfWeek = daysOfWeek())
+        WeekCalendar(state = calendarState, dayContent = { Day(it) })
+    }
+}
 
-    Spacer(modifier = Modifier.weight(0.4f))
+@Composable
+fun Day(day: WeekDay){
+    Box(
+        modifier = Modifier
+            .aspectRatio(1f),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = day.date.dayOfMonth.toString())
+    }
+}
+
+@Composable
+fun DaysOfWeekTitle(daysOfWeek: List<DayOfWeek>) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        for (dayOfWeek in daysOfWeek) {
+            Text(
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
+                text = dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, Locale.GERMAN),
+            )
+        }
+    }
 }
